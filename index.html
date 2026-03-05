@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Custom Media Player</title>
   <link rel="stylesheet" href="style.css"/>
-  
+
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
 </head>
@@ -29,6 +29,7 @@
         <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
         <h2 id="track-title">No track selected</h2>
         <p id="album-info">Album: N/A</p>
+        <canvas id="visualization" width="300" height="100"></canvas>
         <div id="progress-container"><progress id="progress" value="0" max="100"></progress></div>
         <div id="controls">
           <button id="prev">⏮ Prev</button>
@@ -42,7 +43,7 @@
     <section id="library" class="tab-content">
       <h3>Library</h3>
       <div id="library-groups" class="album-grid">
-       
+
       </div>
       <ul id="track-list"></ul> 
     </section>
@@ -55,13 +56,12 @@
       <br><br>
       <h4>Artist PFPs</h4>
       <div id="artist-pfps">
-        
+
       </div>
       <br>
       <h4>Playlists</h4>
       <button id="create-playlist">Create New Playlist</button>
       <div id="playlists">
-    
       </div>
       <br>
       <button id="clear-library">Eject/Clear All</button>
@@ -77,14 +77,14 @@
       <button id="play-album">Play Album</button>
       <button id="edit-album">Edit Info</button>
       <ul id="modal-tracks"></ul>
- 
+      \
       <form id="edit-form" style="display:none;">
         <label>Album Name: <input type="text" id="edit-album-name"></label>
         <label>Artist Name: <input type="text" id="edit-artist-name"></label>
         <label>Genre: <input type="text" id="edit-genre"></label>
         <label>Year: <input type="text" id="edit-year"></label>
         <label>Album Cover: <input type="file" id="edit-cover" accept="image/*"></label>
-        <div id="edit-tracks"></div> 
+        <div id="edit-tracks"></div>
         <button type="button" id="save-edit">Save</button>
       </form>
     </div>
