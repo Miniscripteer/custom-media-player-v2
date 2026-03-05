@@ -6,6 +6,9 @@ let playlists = JSON.parse(localStorage.getItem('playlists')) || {};
 let artistPfps = JSON.parse(localStorage.getItem('artistPfps')) || {};
 let albumCovers = JSON.parse(localStorage.getItem('albumCovers')) || {};
 let currentQueue = [];
+let audioCtx = null;
+let analyser = null;
+let visualizationInterval = null;
 
 const els = {
   uploadTracks: document.getElementById('upload-tracks'),
@@ -42,6 +45,7 @@ const els = {
   editCover: document.getElementById('edit-cover'),
   editTracksDiv: document.getElementById('edit-tracks'),
   saveEdit: document.getElementById('save-edit'),
+  visualization: document.getElementById('visualization'),
 };
 
 const savedTheme = localStorage.getItem('theme') || 'light';
@@ -54,6 +58,15 @@ if (savedTheme === 'gradient') {
 const savedTracks = JSON.parse(localStorage.getItem('tracksMeta')) || [];
 tracks = savedTracks.map(meta => ({ ...meta, file: null }));
 updateLibrary();
+
+document.body.addEventListener('click', () => {
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  if (sound && !sound.playing()) {
+    sound.play().catch(err => console.log('Play resumed:', err));
+  }
+}, { once: true });
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -247,15 +260,17 @@ function playTrack(index) {
       isPlaying = true;
       els.playPause.textContent = '⏸ Pause';
       updateLibrary();
+      startVisualization();
     },
     onpause: () => {
       isPlaying = false;
       els.playPause.textContent = '▶️ Play';
+      stopVisualization();
     },
     onend: () => nextTrack(),
   });
 
-  sound.play();
+  sound.play().catch(err => console.log('Play error:', err));
   els.trackTitle.textContent = track.title;
   els.albumInfo.textContent = `Album: ${track.album} | Artist: ${track.artist} | Genre: ${track.genre} | Year: ${track.year}`;
   els.artistPfp.src = track.pfp;
@@ -310,7 +325,7 @@ function prevTrack() {
 
 els.playPause.onclick = () => {
   if (!sound) return;
-  isPlaying ? sound.pause() : sound.play();
+  isPlaying ? sound.pause() : sound.play().catch(err => console.log('Play error:', err));
 };
 
 els.prev.onclick = prevTrack;
@@ -430,6 +445,44 @@ function saveData() {
   localStorage.setItem('playlists', JSON.stringify(playlists));
   localStorage.setItem('artistPfps', JSON.stringify(artistPfps));
   localStorage.setItem('albumCovers', JSON.stringify(albumCovers));
+}
+
+function startVisualization() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    const source = audioCtx.createMediaElementSource(sound._sounds[0]._node);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    analyser.fftSize = 256;
+  }
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  const canvasCtx = els.visualization.getContext('2d');
+  const WIDTH = els.visualization.width;
+  const HEIGHT = els.visualization.height;
+
+  stopVisualization(); 
+  visualizationInterval = setInterval(() => {
+    analyser.getByteFrequencyData(dataArray);
+    canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+    const barWidth = (WIDTH / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i] / 2;
+      canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+      canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight);
+      x += barWidth + 1;
+    }
+  }, 50);
+}
+
+function stopVisualization() {
+  if (visualizationInterval) clearInterval(visualizationInterval);
+  visualizationInterval = null;
 }
 
 updateLibrary();
