@@ -4,6 +4,8 @@ body {
   padding: 20px;
   transition: all 0.4s ease;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .light {
@@ -206,4 +208,60 @@ progress {
   background: rgba(0,0,0,0.05);
   padding: 10px;
   border-radius: 8px;
+}
+
+.coming-soon {
+  text-align: center;
+  font-size: 2em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 50px;
+}
+
+#side-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: rgba(0,0,0,0.2);
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: -4px 0 10px rgba(0,0,0,0.2);
+  color: white;
+}
+
+#side-panel h4 {
+  margin-top: 0;
+}
+
+#side-panel ul {
+  list-style: none;
+  padding: 0;
+}
+
+#side-panel li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#side-panel li:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-button {
+  background: linear-gradient(to bottom, #007bff, #0062cc);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.custom-file-button:hover {
+  background: linear-gradient(to bottom, #0062cc, #004085);
 }
