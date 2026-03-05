@@ -1,118 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Custom Media Player</title>
   <link rel="stylesheet" href="style.css"/>
-
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
 </head>
+
 <body class="light">
-  <header>
-    <h1>Custom Media Player Remake</h1>
-    <input type="file" id="upload-tracks" multiple accept="audio/*" />
-    <input type="file" id="upload-folder" webkitdirectory directory multiple accept="audio/*" title="Upload Folder for Album/CD" />
-    <button id="theme-toggle">Toggle Light/Dark</button>
-  </header>
 
-  <nav class="tabs">
-    <button class="tab-btn active" data-tab="now-playing">Now Playing</button>
-    <button class="tab-btn" data-tab="library">Library</button>
-    <button class="tab-btn" data-tab="settings">Settings</button>
-    <button class="tab-btn" data-tab="music-bot">Music Bot</button>
-  </nav>
+<header>
+  <h1>Custom Media Player Remake</h1>
 
-  <main>
-    <section id="now-playing" class="tab-content active">
-      <div class="now-playing-container">
-        <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
-        <h2 id="track-title">No track selected</h2>
-        <p id="album-info">Album: N/A</p>
-        <canvas id="visualization" width="300" height="100"></canvas>
-        <div id="progress-container"><progress id="progress" value="0" max="100"></progress></div>
-        <div id="controls">
-          <button id="prev">⏮ Prev</button>
-          <button id="play-pause">▶️ Play</button>
-          <button id="next">⏭ Next</button>
-          <input type="range" id="volume" min="0" max="1" step="0.01" value="1"/>
-          <button id="shuffle">Shuffle</button>
-          <button id="repeat">Repeat</button>
-        </div>
+  <label class="custom-file-button">
+    Upload Tracks
+    <input type="file" id="upload-tracks" multiple accept="audio/*"/>
+  </label>
+
+  <label class="custom-file-button">
+    Upload Album Folder
+    <input type="file" id="upload-folder" webkitdirectory directory multiple accept="audio/*"/>
+  </label>
+
+  <button id="download-track">Download Current</button>
+  <button id="theme-toggle">Toggle Light/Dark</button>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="now-playing">Now Playing</button>
+  <button class="tab-btn" data-tab="library">Library</button>
+  <button class="tab-btn" data-tab="settings">Settings</button>
+  <button class="tab-btn" data-tab="music-bot">Music Bot</button>
+</nav>
+
+<main>
+
+  <section id="now-playing" class="tab-content active">
+    <div class="now-playing-container">
+
+      <div id="drop-zone" class="drop-zone">
+        Drag & Drop Audio Files Here
       </div>
-    </section>
 
-    <section id="library" class="tab-content">
-      <h3>Library</h3>
-      <div id="library-groups" class="album-grid">
+      <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
+      <h2 id="track-title">No track selected</h2>
+      <p id="album-info">Album: N/A</p>
 
+      <canvas id="visualization" width="500" height="150"></canvas>
+
+      <div id="progress-container">
+        <progress id="progress" value="0" max="100"></progress>
       </div>
-      <ul id="track-list"></ul> 
-    </section>
 
-    <section id="settings" class="tab-content">
-      <h3>Customize</h3>
+      <div id="controls">
+        <button id="prev">⏮ Prev</button>
+        <button id="play-pause">▶️ Play</button>
+        <button id="next">⏭ Next</button>
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="1"/>
+        <button id="shuffle">Shuffle</button>
+        <button id="repeat">Repeat</button>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="library" class="tab-content">
+    <h3>Your Library</h3>
+    <div id="library-groups" class="album-grid"></div>
+    <ul id="track-list"></ul>
+  </section>
+
+  <section id="settings" class="tab-content">
+    <h3>Customization & Playback</h3>
+
+    <div style="margin-bottom:20px;">
+      <h4>Theme</h4>
       <label>Gradient Start: <input type="color" id="grad-start" value="#ff7e5f"/></label>
       <label>Gradient End: <input type="color" id="grad-end" value="#feb47b"/></label>
       <button id="apply-gradient">Apply Gradient</button>
-      <br><br>
-      <label>Playback Speed: <input type="range" id="playback-speed" min="0.5" max="2" step="0.1" value="1"/></label>
-      <label>Visualizer Style: <select id="viz-style"><option value="bars">Bars</option><option value="waves">Waves</option></select></label>
-      <label>Auto Play: <input type="checkbox" id="auto-play"></label>
-      <label>Crossfade Duration: <input type="number" id="crossfade" min="0" max="10" value="0"/> seconds</label>
-      <br><br>
-      <h4>Artist PFPs</h4>
-      <div id="artist-pfps">
-       
-      </div>
-      <br>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <h4>Accent & Font</h4>
+      <label>Accent Color: <input type="color" id="accent-color" value="#007bff"/></label>
+      <label>
+        Font:
+        <select id="font-selector">
+          <option value="'Segoe UI', sans-serif">Segoe UI</option>
+          <option value="Poppins, sans-serif">Poppins</option>
+          <option value="Montserrat, sans-serif">Montserrat</option>
+          <option value="Arial, sans-serif">Arial</option>
+        </select>
+      </label>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <h4>Playback</h4>
+      <label>Playback Speed:
+        <input type="range" id="playback-speed" min="0.5" max="2" step="0.1" value="1"/>
+      </label>
+
+      <label>Visualizer Style:
+        <select id="viz-style">
+          <option value="bars">Bars</option>
+          <option value="circle">Circle</option>
+        </select>
+      </label>
+
+      <label>Auto Play:
+        <input type="checkbox" id="auto-play">
+      </label>
+
+      <label>Crossfade Duration:
+        <input type="number" id="crossfade" min="0" max="10" value="0"/> seconds
+      </label>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <h4>Artist Profile Pictures</h4>
+      <div id="artist-pfps"></div>
+    </div>
+
+    <div style="margin-bottom:20px;">
       <h4>Playlists</h4>
       <button id="create-playlist">Create New Playlist</button>
-      <div id="playlists">
-    
-      </div>
-      <br>
-      <button id="clear-library">Eject/Clear All</button>
-    </section>
-
-    <section id="music-bot" class="tab-content">
-      <h3>Music Bot</h3>
-      <div class="coming-soon">Coming Soon</div>
-    </section>
-  </main>
-
-
-  <aside id="side-panel">
-    <h4>Quick Access</h4>
-    <ul id="side-playlists"></ul>
-    <ul id="recent-tracks"></ul>
-  </aside>
-
-
-  <div id="album-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h3 id="modal-title">Album Details</h3>
-      <img id="modal-cover" src="https://via.placeholder.com/200?text=Cover" alt="Album Cover" />
-      <button id="play-album">Play Album</button>
-      <button id="edit-album">Edit Info</button>
-      <ul id="modal-tracks"></ul>
-
-      <form id="edit-form" style="display:none;">
-        <label>Album Name: <input type="text" id="edit-album-name"></label>
-        <label>Artist Name: <input type="text" id="edit-artist-name"></label>
-        <label>Genre: <input type="text" id="edit-genre"></label>
-        <label>Year: <input type="text" id="edit-year"></label>
-        <label>Album Cover: <input type="file" id="edit-cover" accept="image/*"></label>
-        <div id="edit-tracks"></div> 
-        <button type="button" id="save-edit">Save</button>
-      </form>
+      <div id="playlists"></div>
     </div>
-  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
-  <script src="script.js"></script>
+    <button id="clear-library">Eject / Clear All</button>
+  </section>
+
+  <section id="music-bot" class="tab-content">
+    <h3>Music Bot</h3>
+    <div class="coming-soon">Coming Soon</div>
+  </section>
+
+</main>
+
+<aside id="side-panel">
+  <h4>Quick Access</h4>
+  <strong>Playlists</strong>
+  <ul id="side-playlists"></ul>
+  <strong>Recently Played</strong>
+  <ul id="recent-tracks"></ul>
+</aside>
+
+<div id="album-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="modal-title">Album Details</h3>
+    <img id="modal-cover" src="https://via.placeholder.com/200?text=Cover"/>
+    <button id="play-album">Play Album</button>
+    <button id="edit-album">Edit Info</button>
+    <ul id="modal-tracks"></ul>
+
+    <form id="edit-form" style="display:none;">
+      <label>Album Name: <input type="text" id="edit-album-name"></label>
+      <label>Artist Name: <input type="text" id="edit-artist-name"></label>
+      <label>Genre: <input type="text" id="edit-genre"></label>
+      <label>Year: <input type="text" id="edit-year"></label>
+      <label>Album Cover: <input type="file" id="edit-cover" accept="image/*"></label>
+      <div id="edit-tracks"></div>
+      <button type="button" id="save-edit">Save</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
