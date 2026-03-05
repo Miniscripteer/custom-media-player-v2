@@ -85,6 +85,12 @@ h1 {
   box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
+#visualization {
+  margin: 15px 0;
+  background: rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
 #artist-pfp {
   width: 180px;
   height: 180px;
