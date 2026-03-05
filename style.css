@@ -3,6 +3,7 @@ body {
   margin: 0;
   padding: 20px;
   transition: all 0.4s ease;
+  min-height: 100vh;
 }
 
 .light {
@@ -33,14 +34,44 @@ h1 {
   flex: 1;
 }
 
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background: #e9ecef;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+  transition: background 0.2s;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  padding: 20px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
+}
+
 #now-playing {
   text-align: center;
-  margin: 30px 0;
 }
 
 #artist-pfp {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #fff;
@@ -51,7 +82,7 @@ h1 {
 #controls {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 15px;
   margin: 20px 0;
   flex-wrap: wrap;
 }
@@ -73,44 +104,64 @@ button:hover {
   background: #0056b3;
 }
 
-#track-list {
+#library-groups {
+  margin-bottom: 20px;
+}
+
+.album-group {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.album-group h4 {
+  margin: 0 0 10px;
+}
+
+#track-list, .playlist {
   list-style: none;
   padding: 0;
   max-height: 300px;
   overflow-y: auto;
 }
 
-#track-list li {
+#track-list li, .playlist li {
   padding: 12px 15px;
   cursor: pointer;
   border-bottom: 1px solid #ccc;
   transition: background 0.2s;
 }
 
-#track-list li:hover,
-#track-list li.active {
-  background: rgba(0,0,0,0.1);
+#track-list li:hover, .playlist li:hover,
+#track-list li.active, .playlist li.active {
+  background: rgba(0,0,0,0.15);
 }
 
 #progress-container {
-  width: 70%;
+  width: 80%;
   margin: 15px auto;
 }
 
 progress {
   width: 100%;
-  height: 10px;
+  height: 12px;
   border-radius: 5px;
 }
 
 #settings {
-  margin-top: 40px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.1);
+  padding: 0;
+}
+
+#artist-pfps, #playlists {
+  margin-top: 10px;
+}
+
+.artist-pfp-item {
+  margin-bottom: 10px;
 }
 
 label {
   margin-right: 15px;
+  display: block;
 }
