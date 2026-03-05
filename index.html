@@ -21,6 +21,7 @@
     <button class="tab-btn active" data-tab="now-playing">Now Playing</button>
     <button class="tab-btn" data-tab="library">Library</button>
     <button class="tab-btn" data-tab="settings">Settings</button>
+    <button class="tab-btn" data-tab="music-bot">Music Bot</button>
   </nav>
 
   <main>
@@ -36,6 +37,8 @@
           <button id="play-pause">▶️ Play</button>
           <button id="next">⏭ Next</button>
           <input type="range" id="volume" min="0" max="1" step="0.01" value="1"/>
+          <button id="shuffle">Shuffle</button>
+          <button id="repeat">Repeat</button>
         </div>
       </div>
     </section>
@@ -54,19 +57,37 @@
       <label>Gradient End: <input type="color" id="grad-end" value="#feb47b"/></label>
       <button id="apply-gradient">Apply Gradient</button>
       <br><br>
+      <label>Playback Speed: <input type="range" id="playback-speed" min="0.5" max="2" step="0.1" value="1"/></label>
+      <label>Visualizer Style: <select id="viz-style"><option value="bars">Bars</option><option value="waves">Waves</option></select></label>
+      <label>Auto Play: <input type="checkbox" id="auto-play"></label>
+      <label>Crossfade Duration: <input type="number" id="crossfade" min="0" max="10" value="0"/> seconds</label>
+      <br><br>
       <h4>Artist PFPs</h4>
       <div id="artist-pfps">
-
+       
       </div>
       <br>
       <h4>Playlists</h4>
       <button id="create-playlist">Create New Playlist</button>
       <div id="playlists">
+    
       </div>
       <br>
       <button id="clear-library">Eject/Clear All</button>
     </section>
+
+    <section id="music-bot" class="tab-content">
+      <h3>Music Bot</h3>
+      <div class="coming-soon">Coming Soon</div>
+    </section>
   </main>
+
+
+  <aside id="side-panel">
+    <h4>Quick Access</h4>
+    <ul id="side-playlists"></ul>
+    <ul id="recent-tracks"></ul>
+  </aside>
 
 
   <div id="album-modal" class="modal">
@@ -77,14 +98,14 @@
       <button id="play-album">Play Album</button>
       <button id="edit-album">Edit Info</button>
       <ul id="modal-tracks"></ul>
-      \
+
       <form id="edit-form" style="display:none;">
         <label>Album Name: <input type="text" id="edit-album-name"></label>
         <label>Artist Name: <input type="text" id="edit-artist-name"></label>
         <label>Genre: <input type="text" id="edit-genre"></label>
         <label>Year: <input type="text" id="edit-year"></label>
         <label>Album Cover: <input type="file" id="edit-cover" accept="image/*"></label>
-        <div id="edit-tracks"></div>
+        <div id="edit-tracks"></div> 
         <button type="button" id="save-edit">Save</button>
       </form>
     </div>
