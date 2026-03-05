@@ -5,21 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Custom Media Player</title>
   <link rel="stylesheet" href="style.css"/>
-  <!-- PWA basics -->
+
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
 </head>
 <body class="light">
   <header>
-    <h1>Custom Media Player Remake</h1>
+    <h1>Minis Media Player Remake</h1>
     <input type="file" id="upload-tracks" multiple accept="audio/*" />
+    <input type="file" id="upload-folder" webkitdirectory directory multiple accept="audio/*" title="Upload Folder for Album/CD" />
     <button id="theme-toggle">Toggle Light/Dark</button>
   </header>
 
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="now-playing">Now Playing</button>
+    <button class="tab-btn" data-tab="library">Library</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </nav>
+
   <main>
-    <section id="now-playing">
+    <section id="now-playing" class="tab-content active">
       <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
       <h2 id="track-title">No track selected</h2>
+      <p id="album-info">Album: N/A</p>
       <div id="progress-container"><progress id="progress" value="0" max="100"></progress></div>
       <div id="controls">
         <button id="prev">⏮ Prev</button>
@@ -29,22 +37,37 @@
       </div>
     </section>
 
-    <section id="library">
+    <section id="library" class="tab-content">
       <h3>Library</h3>
-      <ul id="track-list"></ul>
+      <div id="library-groups">
+  
+      </div>
+      <ul id="track-list"></ul> 
     </section>
 
-    <section id="settings">
-      <h3>Customize Gradient</h3>
-      <label>Start: <input type="color" id="grad-start" value="#ff7e5f"/></label>
-      <label>End: <input type="color" id="grad-end" value="#feb47b"/></label>
-      <button id="apply-gradient">Apply</button>
+    <section id="settings" class="tab-content">
+      <h3>Customize</h3>
+      <label>Gradient Start: <input type="color" id="grad-start" value="#ff7e5f"/></label>
+      <label>Gradient End: <input type="color" id="grad-end" value="#feb47b"/></label>
+      <button id="apply-gradient">Apply Gradient</button>
       <br><br>
-      <label>Artist PFP: <input type="file" id="upload-pfp" accept="image/*"/></label>
+      <h4>Artist PFPs</h4>
+      <div id="artist-pfps">
+
+      </div>
+      <br>
+      <h4>Playlists</h4>
+      <button id="create-playlist">Create New Playlist</button>
+      <div id="playlists">
+
+      </div>
+      <br>
+      <button id="clear-library">Eject/Clear All</button>
     </section>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
