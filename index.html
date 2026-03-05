@@ -11,7 +11,7 @@
 </head>
 <body class="light">
   <header>
-    <h1>Minis Media Player Remake</h1>
+    <h1>Custom Media Player Remake</h1>
     <input type="file" id="upload-tracks" multiple accept="audio/*" />
     <input type="file" id="upload-folder" webkitdirectory directory multiple accept="audio/*" title="Upload Folder for Album/CD" />
     <button id="theme-toggle">Toggle Light/Dark</button>
@@ -39,8 +39,8 @@
 
     <section id="library" class="tab-content">
       <h3>Library</h3>
-      <div id="library-groups">
-  
+      <div id="library-groups" class="album-grid">
+       
       </div>
       <ul id="track-list"></ul> 
     </section>
@@ -59,12 +59,34 @@
       <h4>Playlists</h4>
       <button id="create-playlist">Create New Playlist</button>
       <div id="playlists">
-
+ 
       </div>
       <br>
       <button id="clear-library">Eject/Clear All</button>
     </section>
   </main>
+
+  
+  <div id="album-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="modal-title">Album Details</h3>
+      <img id="modal-cover" src="https://via.placeholder.com/200?text=Cover" alt="Album Cover" />
+      <button id="play-album">Play Album</button>
+      <button id="edit-album">Edit Info</button>
+      <ul id="modal-tracks"></ul>
+
+      <form id="edit-form" style="display:none;">
+        <label>Album Name: <input type="text" id="edit-album-name"></label>
+        <label>Artist Name: <input type="text" id="edit-artist-name"></label>
+        <label>Genre: <input type="text" id="edit-genre"></label>
+        <label>Year: <input type="text" id="edit-year"></label>
+        <label>Album Cover: <input type="file" id="edit-cover" accept="image/*"></label>
+        <div id="edit-tracks"></div> 
+        <button type="button" id="save-edit">Save</button>
+      </form>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
