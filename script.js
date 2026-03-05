@@ -129,44 +129,79 @@ els.shuffle.onclick = () => {
   els.shuffle.style.opacity = shuffle ? '1' : '0.5'
 }
 
-els.repeat.onclick = () => {
-  repeat = !repeat
-  els.repeat.style.opacity = repeat ? '1' : '0.5'
+if (els.repeat) {
+  els.repeat.onclick = () => {
+    repeat = !repeat
+    els.repeat.style.opacity = repeat ? '1' : '0.5'
+  }
 }
 
-els.playbackSpeed.oninput = e => {
-  playbackSpeed = e.target.value
-  if (sound) sound.rate(playbackSpeed)
+if (els.playbackSpeed) {
+  els.playbackSpeed.oninput = e => {
+    playbackSpeed = e.target.value
+    if (sound) sound.rate(playbackSpeed)
+  }
 }
 
-els.crossfade.oninput = e => crossfade = e.target.value
-els.autoPlay.onchange = e => autoPlay = e.target.checked
-
-els.volume.oninput = e => {
-  if (sound) sound.volume(e.target.value)
+if (els.crossfade) {
+  els.crossfade.oninput = e => {
+    crossfade = e.target.value
+  }
 }
 
-els.downloadBtn.onclick = () => {
-  if (!tracks[currentIndex]?.file) return
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(tracks[currentIndex].file)
-  a.download = tracks[currentIndex].title
-  a.click()
+if (els.autoPlay) {
+  els.autoPlay.onchange = e => {
+    autoPlay = e.target.checked
+  }
 }
 
-els.accentPicker?.addEventListener('input', e => {
-  document.documentElement.style.setProperty('--accent', e.target.value)
-  document.documentElement.style.setProperty('--accent-dark', e.target.value)
-})
+if (els.volume) {
+  els.volume.oninput = e => {
+    if (sound) sound.volume(e.target.value)
+  }
+}
 
-els.fontSelector?.addEventListener('change', e => {
-  document.documentElement.style.setProperty('--font-main', e.target.value)
-})
+if (els.downloadBtn) {
+  els.downloadBtn.onclick = () => {
+    if (!tracks[currentIndex]?.file) return
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(tracks[currentIndex].file)
+    a.download = tracks[currentIndex].title || 'track'
+    a.click()
+  }
+}
 
-els.dropZone?.addEventListener('dragover', e => {
-  e.preventDefault()
-  els.dropZone.classList.add('dragover')
-})
+if (els.accentPicker) {
+  els.accentPicker.addEventListener('input', e => {
+    document.documentElement.style.setProperty('--accent', e.target.value)
+    document.documentElement.style.setProperty('--accent-dark', e.target.value)
+  })
+}
+
+if (els.fontSelector) {
+  els.fontSelector.addEventListener('change', e => {
+    document.documentElement.style.setProperty('--font-main', e.target.value)
+  })
+}
+
+if (els.dropZone) {
+  els.dropZone.addEventListener('dragover', e => {
+    e.preventDefault()
+    els.dropZone.classList.add('dragover')
+  })
+
+  els.dropZone.addEventListener('dragleave', () => {
+    els.dropZone.classList.remove('dragover')
+  })
+
+  els.dropZone.addEventListener('drop', e => {
+    e.preventDefault()
+    els.dropZone.classList.remove('dragover')
+    if (e.dataTransfer?.files?.length) {
+      handleFiles(e.dataTransfer.files)
+    }
+  })
+}
 
 els.dropZone?.addEventListener('dragleave', () => {
   els.dropZone.classList.remove('dragover')
