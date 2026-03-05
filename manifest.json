@@ -1,0 +1,21 @@
+{
+  "name": "Custom Media Player",
+  "short_name": "MediaPlayer",
+  "description": "A customizable remake of Windows Media Player",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192?text=MP",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512?text=MP",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

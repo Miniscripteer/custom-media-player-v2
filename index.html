@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Custom Media Player</title>
+  <link rel="stylesheet" href="style.css"/>
+  <!-- PWA basics -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+</head>
+<body class="light">
+  <header>
+    <h1>Custom Media Player Remake</h1>
+    <input type="file" id="upload-tracks" multiple accept="audio/*" />
+    <button id="theme-toggle">Toggle Light/Dark</button>
+  </header>
+
+  <main>
+    <section id="now-playing">
+      <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
+      <h2 id="track-title">No track selected</h2>
+      <div id="progress-container"><progress id="progress" value="0" max="100"></progress></div>
+      <div id="controls">
+        <button id="prev">⏮ Prev</button>
+        <button id="play-pause">▶️ Play</button>
+        <button id="next">⏭ Next</button>
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="1"/>
+      </div>
+    </section>
+
+    <section id="library">
+      <h3>Library</h3>
+      <ul id="track-list"></ul>
+    </section>
+
+    <section id="settings">
+      <h3>Customize Gradient</h3>
+      <label>Start: <input type="color" id="grad-start" value="#ff7e5f"/></label>
+      <label>End: <input type="color" id="grad-end" value="#feb47b"/></label>
+      <button id="apply-gradient">Apply</button>
+      <br><br>
+      <label>Artist PFP: <input type="file" id="upload-pfp" accept="image/*"/></label>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
