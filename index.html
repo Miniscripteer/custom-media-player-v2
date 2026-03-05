@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Custom Media Player</title>
   <link rel="stylesheet" href="style.css"/>
-
+  
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
 </head>
@@ -25,15 +25,17 @@
 
   <main>
     <section id="now-playing" class="tab-content active">
-      <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
-      <h2 id="track-title">No track selected</h2>
-      <p id="album-info">Album: N/A</p>
-      <div id="progress-container"><progress id="progress" value="0" max="100"></progress></div>
-      <div id="controls">
-        <button id="prev">⏮ Prev</button>
-        <button id="play-pause">▶️ Play</button>
-        <button id="next">⏭ Next</button>
-        <input type="range" id="volume" min="0" max="1" step="0.01" value="1"/>
+      <div class="now-playing-container">
+        <img id="artist-pfp" src="https://via.placeholder.com/150?text=Artist" alt="Artist"/>
+        <h2 id="track-title">No track selected</h2>
+        <p id="album-info">Album: N/A</p>
+        <div id="progress-container"><progress id="progress" value="0" max="100"></progress></div>
+        <div id="controls">
+          <button id="prev">⏮ Prev</button>
+          <button id="play-pause">▶️ Play</button>
+          <button id="next">⏭ Next</button>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="1"/>
+        </div>
       </div>
     </section>
 
@@ -53,20 +55,20 @@
       <br><br>
       <h4>Artist PFPs</h4>
       <div id="artist-pfps">
-
+        
       </div>
       <br>
       <h4>Playlists</h4>
       <button id="create-playlist">Create New Playlist</button>
       <div id="playlists">
- 
+    
       </div>
       <br>
       <button id="clear-library">Eject/Clear All</button>
     </section>
   </main>
 
-  
+
   <div id="album-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -75,7 +77,7 @@
       <button id="play-album">Play Album</button>
       <button id="edit-album">Edit Info</button>
       <ul id="modal-tracks"></ul>
-
+ 
       <form id="edit-form" style="display:none;">
         <label>Album Name: <input type="text" id="edit-album-name"></label>
         <label>Artist Name: <input type="text" id="edit-artist-name"></label>
