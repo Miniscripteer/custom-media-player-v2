@@ -9,6 +9,13 @@ let currentQueue = [];
 let audioCtx = null;
 let analyser = null;
 let visualizationInterval = null;
+let shuffle = false;
+let repeat = false;
+let playbackSpeed = 1;
+let autoPlay = false;
+let crossfade = 0;
+let vizStyle = 'bars';
+let recentTracks = [];
 
 const els = {
   uploadTracks: document.getElementById('upload-tracks'),
@@ -46,6 +53,14 @@ const els = {
   editTracksDiv: document.getElementById('edit-tracks'),
   saveEdit: document.getElementById('save-edit'),
   visualization: document.getElementById('visualization'),
+  shuffle: document.getElementById('shuffle'),
+  repeat: document.getElementById('repeat'),
+  playbackSpeed: document.getElementById('playback-speed'),
+  autoPlay: document.getElementById('auto-play'),
+  crossfade: document.getElementById('crossfade'),
+  vizStyle: document.getElementById('viz-style'),
+  sidePlaylists: document.getElementById('side-playlists'),
+  recentTracks: document.getElementById('recent-tracks'),
 };
 
 const savedTheme = localStorage.getItem('theme') || 'light';
@@ -161,6 +176,7 @@ function updateLibrary() {
 
   updateArtistPfpsUI();
   updatePlaylistsUI();
+  updateSidePanel();
 }
 
 function showAlbumModal(album, group) {
@@ -462,7 +478,7 @@ function startVisualization() {
   const WIDTH = els.visualization.width;
   const HEIGHT = els.visualization.height;
 
-  stopVisualization(); 
+  stopVisualization();
   visualizationInterval = setInterval(() => {
     analyser.getByteFrequencyData(dataArray);
     canvasCtx.fillStyle = 'rgb(0, 0, 0)';
@@ -483,6 +499,54 @@ function startVisualization() {
 function stopVisualization() {
   if (visualizationInterval) clearInterval(visualizationInterval);
   visualizationInterval = null;
+}
+
+els.shuffle.onclick = () => {
+  shuffle = !shuffle;
+  els.shuffle.style.background = shuffle ? 'green' : '';
+};
+
+els.repeat.onclick = () => {
+  repeat = !repeat;
+  els.repeat.style.background = repeat ? 'green' : '';
+};
+
+els.playbackSpeed.oninput = e => {
+  playbackSpeed = e.target.value;
+  if (sound) sound.rate(playbackSpeed);
+};
+
+els.autoPlay.onchange = e => {
+  autoPlay = e.target.checked;
+};
+
+els.crossfade.oninput = e => {
+  crossfade = e.target.value;
+};
+
+els.vizStyle.onchange = e => {
+  vizStyle = e.target.value;
+};
+
+function updateSidePanel() {
+  els.sidePlaylists.innerHTML = '';
+  Object.keys(playlists).forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    li.onclick = () => {
+      currentQueue = playlists[name];
+      if (currentQueue.length > 0) playTrack(currentQueue[0]);
+    };
+    els.sidePlaylists.appendChild(li);
+  });
+
+  els.recentTracks.innerHTML = '';
+  recentTracks.slice(-5).forEach(idx => {
+    const li = document.createElement('li');
+    li.textContent = tracks[idx]?.title || 'Unknown';
+    li.onclick = () => playTrack(idx);
+    els.recentTracks.appendChild(li);
+  });
 }
 
 updateLibrary();
