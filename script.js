@@ -1,11 +1,11 @@
-
 let sound = null;
-let tracks = []; 
+let tracks = [];
 let currentIndex = 0;
 let isPlaying = false;
 let playlists = JSON.parse(localStorage.getItem('playlists')) || {};
-let artistPfps = JSON.parse(localStorage.getItem('artistPfps')) || {}; 
-let albumCovers = JSON.parse(localStorage.getItem('albumCovers')) || {}; 
+let artistPfps = JSON.parse(localStorage.getItem('artistPfps')) || {};
+let albumCovers = JSON.parse(localStorage.getItem('albumCovers')) || {};
+let currentQueue = [];
 
 const els = {
   uploadTracks: document.getElementById('upload-tracks'),
@@ -44,7 +44,6 @@ const els = {
   saveEdit: document.getElementById('save-edit'),
 };
 
-
 const savedTheme = localStorage.getItem('theme') || 'light';
 document.body.className = savedTheme;
 if (savedTheme === 'gradient') {
@@ -52,11 +51,9 @@ if (savedTheme === 'gradient') {
   document.body.style.setProperty('--grad-end', localStorage.getItem('gradEnd') || '#feb47b');
 }
 
-
 const savedTracks = JSON.parse(localStorage.getItem('tracksMeta')) || [];
-tracks = savedTracks.map(meta => ({ ...meta, file: null })); 
+tracks = savedTracks.map(meta => ({ ...meta, file: null }));
 updateLibrary();
-
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -67,10 +64,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-
 els.uploadTracks.addEventListener('change', e => loadFiles(e.target.files));
-
-
 els.uploadFolder.addEventListener('change', e => loadFiles(e.target.files, true));
 
 function loadFiles(files, isFolder = false) {
@@ -79,18 +73,18 @@ function loadFiles(files, isFolder = false) {
       onSuccess: tag => {
         const existing = tracks.find(t => t.title === tag.tags.title && t.artist === tag.tags.artist);
         const metadata = {
-          file: file || existing?.file, 
+          file: file || existing?.file,
           title: tag.tags.title || file.name.replace(/\.\w+$/, ''),
           artist: tag.tags.artist || 'Unknown Artist',
           album: tag.tags.album || (isFolder ? 'CD/Album Upload' : 'Single'),
           genre: tag.tags.genre || 'Unknown',
           year: tag.tags.year || 'Unknown',
-          type: tag.tags.track > 1 ? 'Album' : 'EP/Single',
+          type: 'Single',
           pfp: artistPfps[tag.tags.artist] || 'https://via.placeholder.com/150?text=Artist',
           cover: albumCovers[tag.tags.album] || 'https://via.placeholder.com/200?text=Cover',
         };
         if (existing) {
-          existing.file = file; 
+          existing.file = file;
         } else {
           tracks.push(metadata);
         }
@@ -99,7 +93,6 @@ function loadFiles(files, isFolder = false) {
       },
       onError: err => {
         console.error('Metadata error', err);
-  
         const metadata = {
           file,
           title: file.name.replace(/\.\w+$/, ''),
@@ -124,7 +117,6 @@ function updateLibrary() {
   els.trackList.innerHTML = '';
   els.libraryGroups.innerHTML = '';
 
-
   const groups = tracks.reduce((acc, track, i) => {
     if (!acc[track.album]) acc[track.album] = { tracks: [], artist: track.artist, genre: track.genre, year: track.year, cover: track.cover };
     acc[track.album].tracks.push({ name: track.title, index: i });
@@ -132,16 +124,19 @@ function updateLibrary() {
   }, {});
 
   Object.entries(groups).forEach(([album, group]) => {
+    const count = group.tracks.length;
+    group.type = count > 4 ? 'Album' : (count > 1 ? 'EP' : 'Single');
+    group.tracks.forEach(t => tracks[t.index].type = group.type);
+
     const card = document.createElement('div');
     card.className = 'album-card';
     card.innerHTML = `
       <img class="album-cover" src="${group.cover}" alt="${album}">
-      <p>${album}<br>by ${group.artist}</p>
+      <p>${album}<br>by ${group.artist}<br>${group.type}</p>
     `;
     card.onclick = () => showAlbumModal(album, group);
     els.libraryGroups.appendChild(card);
   });
-
 
   tracks.forEach((track, i) => {
     const li = document.createElement('li');
@@ -156,7 +151,7 @@ function updateLibrary() {
 }
 
 function showAlbumModal(album, group) {
-  els.modalTitle.textContent = album;
+  els.modalTitle.textContent = `${album} (${group.type})`;
   els.modalCover.src = group.cover;
   els.modalTracks.innerHTML = '';
   group.tracks.forEach(t => {
@@ -167,13 +162,11 @@ function showAlbumModal(album, group) {
     els.modalTracks.appendChild(li);
   });
 
-
   els.playAlbum.onclick = () => {
-    const firstIndex = group.tracks[0].index;
+    currentQueue = group.tracks.map(t => t.index);
+    const firstIndex = currentQueue[0];
     playTrack(firstIndex);
-
   };
-
 
   els.editAlbum.onclick = () => {
     els.editForm.style.display = 'block';
@@ -216,7 +209,8 @@ function saveAlbumEdit(oldAlbum, group) {
   if (coverFile) {
     const reader = new FileReader();
     reader.onload = e => {
-      albumCovers[newAlbum] = e.target.result; 
+      albumCovers[newAlbum] = e.target.result;
+      tracks.forEach(t => { if (t.album === newAlbum) t.cover = e.target.result; });
       saveData();
       updateLibrary();
     };
@@ -229,19 +223,17 @@ function saveAlbumEdit(oldAlbum, group) {
   updateLibrary();
 }
 
-
 document.querySelector('.close').onclick = () => {
   els.modal.style.display = 'none';
   els.editForm.style.display = 'none';
 };
-
 
 function playTrack(index) {
   if (sound) sound.unload();
   currentIndex = index;
   const track = tracks[index];
   if (!track.file) {
-    alert('Please re-upload the file for this track.'); 
+    alert('Please re-upload the file for this track.');
     return;
   }
   const src = URL.createObjectURL(track.file);
@@ -277,13 +269,43 @@ function playTrack(index) {
     });
   }
 
-
   const durationMs = sound.duration() * 1000;
   const interval = setInterval(() => {
     if (!isPlaying || !sound) clearInterval(interval);
     const pos = sound.seek() * 1000;
     els.progress.value = (pos / durationMs) * 100 || 0;
   }, 300);
+}
+
+function nextTrack() {
+  let next = currentIndex + 1;
+  if (currentQueue.length > 0) {
+    const queueIdx = currentQueue.indexOf(currentIndex) + 1;
+    if (queueIdx < currentQueue.length) {
+      next = currentQueue[queueIdx];
+    } else {
+      currentQueue = [];
+      next = (currentIndex + 1) % tracks.length;
+    }
+  } else {
+    next = (currentIndex + 1) % tracks.length;
+  }
+  playTrack(next);
+}
+
+function prevTrack() {
+  let prev = currentIndex - 1;
+  if (currentQueue.length > 0) {
+    const queueIdx = currentQueue.indexOf(currentIndex) - 1;
+    if (queueIdx >= 0) {
+      prev = currentQueue[queueIdx];
+    } else {
+      prev = (currentIndex - 1 + tracks.length) % tracks.length;
+    }
+  } else {
+    prev = (currentIndex - 1 + tracks.length) % tracks.length;
+  }
+  playTrack(prev);
 }
 
 els.playPause.onclick = () => {
@@ -296,6 +318,24 @@ els.next.onclick = nextTrack;
 
 els.volume.oninput = e => {
   if (sound) sound.volume(e.target.value);
+};
+
+els.themeToggle.onclick = () => {
+  let current = document.body.className;
+  let next = current === 'light' ? 'dark' : 'light';
+  document.body.className = next;
+  localStorage.setItem('theme', next);
+};
+
+els.applyGradient.onclick = () => {
+  const start = els.gradStart.value;
+  const end = els.gradEnd.value;
+  document.body.style.setProperty('--grad-start', start);
+  document.body.style.setProperty('--grad-end', end);
+  document.body.className = 'gradient';
+  localStorage.setItem('theme', 'gradient');
+  localStorage.setItem('gradStart', start);
+  localStorage.setItem('gradEnd', end);
 };
 
 function updateArtistPfpsUI() {
@@ -326,10 +366,54 @@ function updateArtistPfpsUI() {
   });
 }
 
+els.createPlaylist.onclick = () => {
+  const name = prompt('Playlist name?');
+  if (name && !playlists[name]) {
+    playlists[name] = [];
+    saveData();
+    updatePlaylistsUI();
+  }
+};
 
+function updatePlaylistsUI() {
+  els.playlistsDiv.innerHTML = '';
+  Object.entries(playlists).forEach(([name, indices]) => {
+    const div = document.createElement('div');
+    div.innerHTML = `<h5>${name} <button data-name="${name}">Add Current Track</button> <button data-delete="${name}">Delete</button></h5><ul class="playlist"></ul>`;
+    indices.forEach(idx => {
+      const li = document.createElement('li');
+      li.textContent = tracks[idx]?.title || 'Unknown';
+      li.onclick = () => playTrack(idx);
+      div.querySelector('ul').appendChild(li);
+    });
+    div.querySelector(`[data-name="${name}"]`).onclick = () => {
+      if (!indices.includes(currentIndex)) {
+        indices.push(currentIndex);
+        saveData();
+        updatePlaylistsUI();
+      }
+    };
+    div.querySelector(`[data-delete="${name}"]`).onclick = () => {
+      delete playlists[name];
+      saveData();
+      updatePlaylistsUI();
+    };
+    els.playlistsDiv.appendChild(div);
+  });
+}
 
-
-
+els.clearLibrary.onclick = () => {
+  tracks = [];
+  playlists = {};
+  artistPfps = {};
+  albumCovers = {};
+  saveData();
+  updateLibrary();
+  if (sound) sound.unload();
+  els.trackTitle.textContent = 'No track selected';
+  els.albumInfo.textContent = 'Album: N/A';
+  els.artistPfp.src = 'https://via.placeholder.com/150?text=Artist';
+};
 
 function saveData() {
   const meta = tracks.map(t => ({
@@ -339,7 +423,7 @@ function saveData() {
     genre: t.genre,
     year: t.year,
     type: t.type,
-    pfp: t.pfp, 
+    pfp: t.pfp,
     cover: t.cover,
   }));
   localStorage.setItem('tracksMeta', JSON.stringify(meta));
@@ -347,6 +431,5 @@ function saveData() {
   localStorage.setItem('artistPfps', JSON.stringify(artistPfps));
   localStorage.setItem('albumCovers', JSON.stringify(albumCovers));
 }
-
 
 updateLibrary();
